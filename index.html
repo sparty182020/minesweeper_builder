@@ -12851,22 +12851,20 @@
                 );
 
                 $(document).keydown(function (ag) {
-                    if (ag.which !== 83 && er) {
-                        ag.preventDefault()
-                        return
-                    }
-                    if (ag.which == 83) {
-                        ag.preventDefault()
+                    if (ag.keyCode == 78) { // key "n"
                         E.newGame()
-                    } else if (ag.which == 32) {
-                        ag.preventDefault()
-                    } else if (ag.which == 68) {
-                        gameDeath([c[hoveredSquareId]])
-                    } else if (ag.which == 70) {
+                    } else if (ag.keyCode == 69) { // key "e"
+                        $("#options, #display, #import").hide()
+                        $("#export").toggle()
+                    } else if (ag.keyCode == 73) { // key "i"
+                        $("#options, #display, #export").hide()
+                        $("#import").toggle()
+                    } else if (ag.keyCode == 70) { // key "f"
                         document.body.requestFullscreen()
-                    } else if (ag.key == "~") {
-                        gameWin()
-                    } else {
+                    } else if (ag.ctrlKey && ag.shiftKey && ag.keyCode == 73) {
+                        ag.preventDefault()
+                        console.log("We saw that you were trying to access the DevTools. If you are looking for the source code, it can be found at https://github.com/sparty182020/minesweeper_builder.")
+                        alert("We saw that you were trying to access the DevTools. If you are looking for the source code, it can be found at https://github.com/sparty182020/minesweeper_builder.")
 
                     }
                 });
@@ -12886,7 +12884,18 @@
                 })
 
                 $(document).contextmenu(function (event) {
-                    event.preventDefault()
+                    if (window.localStorage?.getItem('devPerms') === "verCode-416.983.997") {
+                        return
+                    } else {
+                        const prompt = prompt("Please enter the dev passkey")
+                        if (prompt !== "verCode-416.983.997") {
+                            alert("Incorrect dev passkey")
+                            event.preventDefault()
+                            return
+                        } else {
+                            return
+                        }
+                    }
                 })
             }
         };
