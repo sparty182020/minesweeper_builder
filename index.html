@@ -12860,10 +12860,13 @@
                     if (ag.keyCode == 78) { // key "n"
                         E.newGame()
                     } else if (ag.keyCode == 69) { // key "e"
+                        ag.preventDefault()
                         $("#export-link").click()
                     } else if (ag.keyCode == 73) { // key "i"
+                        ag.preventDefault()
                         $("#import-link").click()
                     } else if (ag.keyCode == 70) { // key "f"
+                        ag.preventDefault()
                         document.body.requestFullscreen()
                     }
                 });
@@ -13038,7 +13041,7 @@
                 $("#custom_width").val(numCols);
 
                 numMines = 0
-                
+
                 return {
                     gameTypeId: gameTypeId,
                     numRows: numRows,
