@@ -12851,21 +12851,20 @@
                 );
 
                 $(document).keydown(function (ag) {
-                    if (ag.keyCode == 78) { // key "n"
-                        E.newGame()
-                    } else if (ag.keyCode == 69) { // key "e"
-                        $("#options, #display, #import").hide()
-                        $("#export").toggle()
-                    } else if (ag.keyCode == 73) { // key "i"
-                        $("#options, #display, #export").hide()
-                        $("#import").toggle()
-                    } else if (ag.keyCode == 70) { // key "f"
-                        document.body.requestFullscreen()
-                    } else if (ag.ctrlKey && ag.shiftKey && ag.keyCode == 73) {
+                    if (ag.ctrlKey && ag.shiftKey && ag.keyCode == 73) {
                         ag.preventDefault()
                         console.log("We saw that you were trying to access the DevTools. If you are looking for the source code, it can be found at https://github.com/sparty182020/minesweeper_builder.")
                         alert("We saw that you were trying to access the DevTools. If you are looking for the source code, it can be found at https://github.com/sparty182020/minesweeper_builder.")
-
+                        return
+                    }
+                    if (ag.keyCode == 78) { // key "n"
+                        E.newGame()
+                    } else if (ag.keyCode == 69) { // key "e"
+                        $("#export-link").click()
+                    } else if (ag.keyCode == 73) { // key "i"
+                        $("#import-link").click()
+                    } else if (ag.keyCode == 70) { // key "f"
+                        document.body.requestFullscreen()
                     }
                 });
 
@@ -12910,24 +12909,6 @@
             var hashParts, i;
             var minesweeper;
 
-            if (!!location.hash && location.hash.length > 1) {
-                hashParts = location.hash.substring(1).split('-');
-
-                for (i = 0; i < hashParts.length; i++) {
-                    switch (hashParts[i]) {
-                        case '150': zoom = '150'; break;
-                        case '200': zoom = '200'; break;
-                        case 'left': position = 'left'; break;
-                        case 'night': isNightMode = true; break;
-                    }
-                }
-            }
-
-            $('#' + gameType).attr('checked', true);
-            $('#zoom' + zoom).attr('checked', true);
-            $('#position-' + position).attr('checked', true);
-            $('#nightMode').attr('checked', isNightMode);
-
             document.getElementById('game-container').className = 'z' + zoom;
             setPosition(position);
 
@@ -12943,11 +12924,9 @@
             ], getOptions, setOptions);
 
             minesweeper.newGame();
-            setHash();
 
             $("#options-link, #options-close").click(function () {
                 $("#options").toggle();
-                $("#display").hide();
                 $("#import").hide();
                 $("#export").hide();
             });
@@ -12955,44 +12934,17 @@
             $("#options-form").submit(function (e) {
                 $("#options").hide();
                 minesweeper.newGame();
-                setHash();
                 e.preventDefault();
-            });
-
-            $("#display-link, #display-close").click(function () {
-                $("#options").hide();
-                $("#display").toggle();
-                $("#import").hide();
-                $("#export").hide();
-            });
-
-            $('input[name="zoom"]').change(function () {
-                var zoom = parseFloat($(this).val());
-                minesweeper.resize(zoom);
-                setHash();
-            });
-
-            $('input[name="position"]').change(function () {
-                setPosition($(this).val());
-                setHash();
-            });
-
-            $('input[name="nightMode"]').change(function () {
-                var isNightMode = $(this).is(':checked');
-                toggleNightMode(isNightMode);
-                setHash();
             });
 
             $("#controls-link, #controls-close").click(function () {
                 $("#options").hide();
-                $("#display").hide();
                 $("#import").hide();
                 $("#export").hide();
             });
 
             $("#import-link, #import-close").click(function () {
                 $("#options").hide();
-                $("#display").hide();
                 $("#import").toggle();
                 $("#export").hide();
 
@@ -13016,7 +12968,6 @@
 
             $("#export-link, #export-close").click(function () {
                 $("#options").hide();
-                $("#display").hide();
                 $("#import").hide();
                 $("#export").toggle();
 
@@ -13089,14 +13040,12 @@
                 numMines = 0
                 $("#custom_mines").val(numMines);
 
-                zoom = parseFloat($('input[name="zoom"]:checked').val());
-
                 return {
                     gameTypeId: gameTypeId,
                     numRows: numRows,
                     numCols: numCols,
                     numMines: numMines,
-                    zoom: zoom
+                    zoom: 200
                 };
             }
 
@@ -13104,33 +13053,6 @@
                 $('#custom_height').val(options.numRows);
                 $('#custom_width').val(options.numCols);
                 $('#custom_mines').val(options.numMines);
-            }
-
-            function setHash() {
-                var gameType = 'custom';
-                var zoom = $('input[name="zoom"]:checked').val();
-                var position = $('input[name="position"]:checked').val();
-                var isNightMode = $('input[name="nightMode"]').is(':checked');
-                var hashParts = [];
-
-                if (zoom != 1) {
-                    hashParts.push(zoom * 100);
-                }
-
-                if (position != "center") {
-                    hashParts.push(position);
-                }
-
-                if (isNightMode) {
-                    hashParts.push('night');
-                }
-
-                if (hashParts.length > 0) {
-                    location.hash = '#' + hashParts.join('-');
-                }
-                else {
-                    location.hash = '';
-                }
             }
         });
     </script>
@@ -13147,7 +13069,6 @@
                             <div id="game-container" class="z200" style="width: 1000px;">
                                 <div style="white-space: nowrap;">
                                     <span id="options-link" title="game options">Game</span>
-                                    | <span id="display-link" title="size/position">Display</span>
                                     | <span id="import-link" title="load exported game">Import</span>
                                     | <span id="export-link" title="same game to be impoorted">Export</span>
                                     | <span title="Fullscreen the minesweeper window"><a
@@ -13899,48 +13820,6 @@
                                         </tbody>
                                     </table>
                                 </form>
-
-                                <table cellspacing="0" cellpadding="2" id="display" class="dialog">
-                                    <tbody>
-                                        <tr class="dialog-title">
-                                            <td>Display</td>
-                                            <td style="text-align: right;">
-                                                <span id="display-close" class="dialog-close"
-                                                    title="close this box">×</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 6px;"><strong>Zoom</strong></td>
-                                            <td style="padding: 6px;">
-                                                <label><input type="radio" name="zoom" id="zoom100" value="1"
-                                                        checked="checked"> 100%</label><br>
-                                                <label><input type="radio" name="zoom" id="zoom150" value="1.5">
-                                                    150%</label><br>
-                                                <label><input type="radio" name="zoom" id="zoom200" value="2"
-                                                        checked="checked"> 200%</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 6px; border-top: 1px solid #AAA;">
-                                                <strong>Position</strong>
-                                            </td>
-                                            <td style="padding: 6px; border-top: 1px solid #AAA;">
-                                                <label><input type="radio" name="position" id="position-center"
-                                                        value="center" checked="checked"> Center</label><br>
-                                                <label><input type="radio" name="position" id="position-left"
-                                                        value="left" checked=""> Left</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 6px; border-top: 1px solid #AAA;"><label
-                                                    for="nightMode"><strong>Night Mode</strong></label></td>
-                                            <td style="padding: 6px; border-top: 1px solid #AAA;">
-                                                <input type="checkbox" name="nightMode" id="nightMode"
-                                                    checked="checked">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
 
                                 <form id="import-form">
                                     <table cellspacing="0" cellpadding="2" id="import" class="dialog">
