@@ -13038,21 +13038,19 @@
                 $("#custom_width").val(numCols);
 
                 numMines = 0
-                $("#custom_mines").val(numMines);
-
+                
                 return {
                     gameTypeId: gameTypeId,
                     numRows: numRows,
                     numCols: numCols,
                     numMines: numMines,
-                    zoom: 200
+                    zoom: 2
                 };
             }
 
             function setOptions(options) {
                 $('#custom_height').val(options.numRows);
                 $('#custom_width').val(options.numCols);
-                $('#custom_mines').val(options.numMines);
             }
         });
     </script>
